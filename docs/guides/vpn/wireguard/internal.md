@@ -35,7 +35,8 @@ A properly configured firewall is ***highly*** recommended for any Internet-faci
 On your server, add the following to the `[INTERFACE]` section of your `/etc/wireguard/wg0.conf`:
 
 ```bash
-PostUp = nft add table ip wireguard; nft add chain ip wireguard wireguard_chain {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip wireguard wireguard_chain counter packets 0 bytes 0 masquerade; nft add table ip6 wireguard; nft add chain ip6 wireguard wireguard_chain {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip6 wireguard wireguard_chain counter packets 0 bytes 0 masquerade
+PostUp = nft add table ip wireguard; nft add chain ip wireguard wireguard_nat {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip wireguard wireguard_nat iifname %i oifname 'eth0' counter masquerade
+PostUp = nft add table ip6 wireguard; nft add chain ip6 wireguard wireguard_nat {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip6 wireguard wireguard_nat iifname %i oifname 'eth0' counter masquerade
 PostDown = nft delete table ip wireguard; nft delete table ip6 wireguard
 ```
 
@@ -70,7 +71,8 @@ The rules will then be cleared once the tunnel is down.
     Address = [Wireguard-internal IPs of the server, e.g. 10.100.0.1/24, fd08:4711::1/64]
     ListenPort = 47111
 
-    PostUp = nft add table ip wireguard; nft add chain ip wireguard wireguard_chain {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip wireguard wireguard_chain counter packets 0 bytes 0 masquerade; nft add table ip6 wireguard; nft add chain ip6 wireguard wireguard_chain {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip6 wireguard wireguard_chain counter packets 0 bytes 0 masquerade
+    PostUp = nft add table ip wireguard; nft add chain ip wireguard wireguard_nat {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip wireguard wireguard_nat iifname %i oifname 'eth0' counter masquerade
+    PostUp = nft add table ip6 wireguard; nft add chain ip6 wireguard wireguard_nat {type nat hook postrouting priority srcnat\; policy accept\;}; nft add rule ip6 wireguard wireguard_nat iifname %i oifname 'eth0' counter masquerade
     PostDown = nft delete table ip wireguard; nft delete table ip6 wireguard
 
     # Android phone
